@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kubedemoapp
-          image: muskeharini/myapp:testimage
+          image: jhansirani123/myapp:testimage
           ports:
             - containerPort: 5000
 Service.yaml
