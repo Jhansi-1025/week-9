@@ -1,38 +1,42 @@
 pipeline {
     agent any
+
     stages {
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker Image"
-                bat "docker build -t jhansirani123/myapp:testimage ."
+                echo "Build Docker Image"
+                bat "docker build -t kubedemoapp:v1 ."
             }
         }
 
         stage('Docker Login') {
             steps {
-                bat "docker login -u jhansirani123"
+                bat 'docker login -u jhansirani123 -p dckr_pat_LZ2YOvfrG8ac12o_6ViEWE_ezuY'
             }
         }
+
         stage('Push Docker Image to Docker Hub') {
             steps {
-                echo "Pushing Docker Image to Docker Hub"
-                bat "docker push jhansirani123/myapp:testimage"
+                echo "push Docker Image to Docker Hub"
+                bat "docker tag kubedemoapp:v1 jhansirani123/sample:kubeimage1"
+
+                bat "docker push jhansirani123/sample:kubeimage1"
             }
         }
-        stage('Deploy to Kubernetes') {
-            steps {
-                bat "kubectl apply -f deployment.yaml --validate=false"
-                bat "kubectl apply -f service.yaml"
-            }
-        }
-        stage('Verify Deployment') {
-            steps {
-                bat "kubectl rollout status deployment/kubedemoapp-deployment"
-                bat "kubectl get pods -o wide"
-                bat "kubectl get svc kubedemoapp-service"
-            }
-        }
+
+    
+stage('Deploy to Kubernetes') {
+    steps {
+        bat 'kubectl --kubeconfig "C:\\Windows\\System32\\config\\systemprofile\\.kube\\config" config current-context'
+        bat 'kubectl --kubeconfig "C:\\Windows\\System32\\config\\systemprofile\\.kube\\config" get nodes'
+        bat 'kubectl --kubeconfig "C:\\Windows\\System32\\config\\systemprofile\\.kube\\config" apply -f deployment.yaml'
+        bat 'kubectl --kubeconfig "C:\\Windows\\System32\\config\\systemprofile\\.kube\\config" apply -f service.yaml'
+        bat 'kubectl --kubeconfig "C:\\Windows\\System32\\config\\systemprofile\\.kube\\config" rollout status deployment/kubedemoapp-deployment'
     }
+}
+
+    }
+
     post {
         success {
             echo 'Pipeline completed successfully!'
