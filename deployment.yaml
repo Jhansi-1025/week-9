@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubedemoapp-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: kubedemoapp
+  template:
+    metadata:
+      labels:
+        app: kubedemoapp
+    spec:
+      containers:
+        - name: kubedemoapp
+          image: muskeharini/myapp:testimage
+          ports:
+            - containerPort: 5000
+Service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubedemoapp-service
+spec:
+  selector:
+    app: kubedemoapp
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30088
+  type: NodePort
